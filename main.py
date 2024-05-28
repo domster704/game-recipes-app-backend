@@ -146,7 +146,7 @@ def update_recipe():
 
 
 if __name__ == '__main__':
-    cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM categories''')
-    print(cursor.fetchall())
-    # app.run(port=10000, debug=True)
+    # cursor = conn.cursor()
+    # cursor.execute('''SELECT * FROM categories''')
+    # print(cursor.fetchall())
+    app.run(port=10000, debug=True)
