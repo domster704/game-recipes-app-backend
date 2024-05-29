@@ -37,7 +37,7 @@ CORS(app, support_credentials=True)
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return jsonify([1, 2, 3])
 
 
 @app.get('/api/get_all_recipes')
