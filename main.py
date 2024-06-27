@@ -69,8 +69,10 @@ def get_all_recipes():
         cursor.close()
         return jsonify(new_array), 201
     except Exception as e:
-        print(e)
         cursor.close()
+        if conn:
+            conn.rollback()
+        print(e)
         return jsonify(False), 500
 
 
@@ -104,8 +106,10 @@ def add_new_recipe():
         cursor.close()
         return jsonify(True), 201
     except Exception as e:
-        print(e)
         cursor.close()
+        if conn:
+            conn.rollback()
+        print(e)
         return jsonify(False), 500
 
 
@@ -117,32 +121,34 @@ def update_recipe():
         return jsonify(False), 500
     cursor = conn.cursor()
     data = request.json
-    # try:
-    cursor.execute(f'''UPDATE recipes SET title=%(title)s,
-                                                 category_id=%(category)s,
-                                                 people=%(people)s,
-                                                 time=%(time)s,
-                                                 description=%(description)s,
-                                                 ingredients=%(ingredients)s,
-                                                 instructions=%(instructions)s
-                                  WHERE id=%(id)s''',
-                   {
-                       'id': data['id'],
-                       'title': data['title'],
-                       'category': data['category'],
-                       'people': data['people'],
-                       'time': data['time'],
-                       'description': data['description'],
-                       'ingredients': "{" + ",".join(data['ingredients']) + "}",
-                       'instructions': data['instructions'],
-                   })
-    conn.commit()
-    cursor.close()
-    return jsonify(True), 201
-    # except Exception as e:
-    #     print(e)
-    #     cursor.close()
-    #     return jsonify(False), 500
+    try:
+        cursor.execute(f'''UPDATE recipes SET title=%(title)s,
+                                                     category_id=%(category)s,
+                                                     people=%(people)s,
+                                                     time=%(time)s,
+                                                     description=%(description)s,
+                                                     ingredients=%(ingredients)s,
+                                                     instructions=%(instructions)s
+                                      WHERE id=%(id)s''',
+                       {
+                           'id': data['id'],
+                           'title': data['title'],
+                           'category': data['category'],
+                           'people': data['people'],
+                           'time': data['time'],
+                           'description': data['description'],
+                           'ingredients': "{" + ",".join(data['ingredients']) + "}",
+                           'instructions': data['instructions'],
+                       })
+        conn.commit()
+        cursor.close()
+        return jsonify(True), 201
+    except Exception as e:
+        cursor.close()
+        if conn:
+            conn.rollback()
+        print(e)
+        return jsonify(False), 500
 
 
 if __name__ == '__main__':
